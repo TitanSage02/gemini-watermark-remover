@@ -16,9 +16,22 @@ const MIME_TYPES = {
     '.webp': 'image/webp'
 };
 
+function resolvePathFlavor(filePath) {
+    if (typeof filePath !== 'string') {
+        return path;
+    }
+
+    if (/^[A-Za-z]:[\\/]/.test(filePath) || filePath.startsWith('\\\\') || filePath.includes('\\')) {
+        return path.win32;
+    }
+
+    return path.posix;
+}
+
 export function buildFixedOutputPath(inputPath) {
-    const parsed = path.parse(inputPath);
-    return path.join(parsed.dir, `${parsed.name}-fix${parsed.ext}`);
+    const pathFlavor = resolvePathFlavor(inputPath);
+    const parsed = pathFlavor.parse(inputPath);
+    return pathFlavor.join(parsed.dir, `${parsed.name}-fix${parsed.ext}`);
 }
 
 export async function writeFixedOutput(outputPath, outputBuffer, { overwrite = true } = {}) {

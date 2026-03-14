@@ -16,6 +16,11 @@ test('buildFixedOutputPath should preserve extension case and nested dots', () =
     assert.equal(output, 'D:\\tmp\\foo.bar-fix.WEBP');
 });
 
+test('buildFixedOutputPath should preserve POSIX paths on non-Windows runners', () => {
+    const output = buildFixedOutputPath('/tmp/foo.bar.webp');
+    assert.equal(output, '/tmp/foo.bar-fix.webp');
+});
+
 test('writeFixedOutput should overwrite existing fix file by default', async () => {
     const tempDir = await mkdtemp(path.join(os.tmpdir(), 'wm-export-'));
     const outputPath = path.join(tempDir, 'sample-fix.png');
