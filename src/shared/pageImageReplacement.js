@@ -1033,9 +1033,6 @@ function revokeTrackedObjectUrl(imageElement) {
   if (previewState?.overlay?.style && typeof previewState.overlay.style === 'object') {
     previewState.overlay.style.opacity = '0';
   }
-  if (imageElement?.style && typeof imageElement.style === 'object') {
-    imageElement.style.opacity = previewState?.previousOpacity ?? '';
-  }
   previewOverlayState.delete(imageElement);
 
   const objectUrl = imageElement?.dataset?.[PAGE_IMAGE_OBJECT_URL_KEY];
@@ -1159,13 +1156,8 @@ function applyReadyImageState(imageElement, processedBlob) {
     } else {
       container.appendChild(overlay);
     }
-    const previousOpacity = typeof imageElement?.style?.opacity === 'string' ? imageElement.style.opacity : '';
-    if (imageElement?.style && typeof imageElement.style === 'object') {
-      imageElement.style.opacity = '0';
-    }
     previewOverlayState.set(imageElement, {
-      overlay,
-      previousOpacity
+      overlay
     });
   }
   hideProcessingOverlay(imageElement);

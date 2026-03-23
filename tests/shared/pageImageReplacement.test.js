@@ -1002,6 +1002,53 @@ test('applyPageImageProcessingResult should keep preview overlay constrained to 
   });
 });
 
+test('applyPageImageProcessingResult should keep the original Gemini image visible for native copy compatibility', async () => {
+  await withPageImageTestEnv(async ({ MockHTMLImageElement }) => {
+    const processedBlob = new Blob(['processed'], { type: 'image/png' });
+    const container = createMockElement('div');
+
+    const image = new MockHTMLImageElement();
+    image.dataset = {
+      gwrSourceUrl: 'https://lh3.googleusercontent.com/gg/example-token=s1024-rj'
+    };
+    image.style = {
+      opacity: '1'
+    };
+    image.src = 'https://lh3.googleusercontent.com/gg/example-token=s1024-rj';
+    image.currentSrc = image.src;
+    image.parentElement = container;
+    image.closest = (selector) => selector === 'generated-image,.generated-image-container'
+      ? container
+      : null;
+    image.getBoundingClientRect = () => ({
+      left: 140,
+      top: 120,
+      width: 640,
+      height: 360
+    });
+    container.getBoundingClientRect = () => ({
+      left: 100,
+      top: 80,
+      width: 900,
+      height: 700
+    });
+
+    applyPageImageProcessingResult({
+      imageElement: image,
+      sourceUrl: image.src,
+      normalizedUrl: image.src,
+      sourceResult: {
+        skipped: false,
+        processedBlob,
+        selectedStrategy: 'page-fetch'
+      },
+      logger: createSilentLogger()
+    });
+
+    assert.equal(image.style.opacity, '1');
+  });
+});
+
 test('applyPageImageProcessingResult should mount preview overlay inside overlay-container before generated-image-controls', async () => {
   await withPageImageTestEnv(async ({ MockHTMLImageElement }) => {
     const processedBlob = new Blob(['processed'], { type: 'image/png' });
