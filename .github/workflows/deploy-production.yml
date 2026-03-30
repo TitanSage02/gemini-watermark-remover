@@ -1,0 +1,76 @@
+name: Deploy Production
+
+on:
+  push:
+    branches:
+      - main
+
+  # Allow manual trigger
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build production
+        run: pnpm build
+        env:
+          NODE_ENV: production
+
+      - name: Deploy to production branch
+        run: |
+          # Configure git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Get commit info for the deploy message
+          COMMIT_SHA=$(git rev-parse --short HEAD)
+          COMMIT_MSG=$(git log -1 --pretty=%s)
+
+          # Create a temporary directory for the deploy
+          DEPLOY_DIR=$(mktemp -d)
+          cp -r dist/* "$DEPLOY_DIR/"
+
+          # Switch to the production branch (create if doesn't exist)
+          git fetch origin production 2>/dev/null || true
+          if git show-ref --verify --quiet refs/remotes/origin/production; then
+            git checkout production
+          else
+            git checkout --orphan production
+            git rm -rf . 2>/dev/null || true
+          fi
+
+          # Clean everything and copy the fresh build
+          find . -maxdepth 1 ! -name '.git' ! -name '.' -exec rm -rf {} +
+          cp -r "$DEPLOY_DIR"/* .
+
+          # Commit and push
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to deploy"
+          else
+            git commit -m "deploy: ${COMMIT_MSG} (${COMMIT_SHA})"
+            git push origin production
+            echo "Deployed successfully from ${COMMIT_SHA}"
+          fi

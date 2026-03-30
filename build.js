@@ -22,22 +22,20 @@ const getCommitHash = () => {
 };
 
 const jsBanner = `/*!
- * ${pkg.name} v${pkg.version}+${getCommitHash()}
- * ${pkg.description}
- * (c) ${new Date().getFullYear()} ${pkg.author}
- * ${pkg.repository.url?.replace(/\.git$/, '')}
- * Released under the ${pkg.license} License.
+ * CleanMark v${pkg.version}+${getCommitHash()}
+ * AI Watermark Remover by Espérance AYIWAHOUN
+ * (c) ${new Date().getFullYear()} Espérance AYIWAHOUN — esperance.ayiwahoun.pro@gmail.com
  */`;
 
 const userscriptBanner = `// ==UserScript==
-// @name         Gemini NanoBanana Watermark Remover
-// @name:zh-CN   Gemini NanoBanana 图片水印移除
-// @namespace    https://github.com/GargantuaX
+// @name         CleanMark — AI Watermark Remover
+// @name:zh-CN   CleanMark — AI 图片水印移除
+// @namespace    https://cleanmark.app
 // @version      ${pkg.version}
-// @description  Automatically removes watermarks from Gemini AI generated images
-// @description:zh-CN 自动移除 Gemini AI 生成图像中的水印
+// @description  Automatically removes AI watermarks from generated images
+// @description:zh-CN 自动移除 AI 生成图像中的水印
 // @icon         https://www.google.com/s2/favicons?domain=gemini.google.com
-// @author       GargantuaX
+// @author       Espérance AYIWAHOUN
 // @license      MIT
 // @match        https://gemini.google.com/app
 // @match        https://gemini.google.com/app/*
