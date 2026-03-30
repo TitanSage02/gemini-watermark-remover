@@ -1,5 +1,5 @@
 /*!
- * CleanMark v1.0.5+5e66373
+ * CleanMark v1.0.5+e208e02
  * AI Watermark Remover by Espérance AYIWAHOUN
  * (c) 2026 Espérance AYIWAHOUN — esperance.ayiwahoun.pro@gmail.com
  */
